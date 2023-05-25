@@ -7,15 +7,14 @@ This golang program exercises INAV's  `MSP SET_RAW_RC` with `USE_MSP_RC_OVERRIDE
 ## Prerequisites
 
 * A supported FC with a modern INAV (say > 4.0)
-* Firmware built with  `USE_MSP_RC_OVERRIDE`
-
+* Firmware built with  `USE_MSP_RC_OVERRIDE` (un-comment in `src/main/target/common.h` or append to `src/main/target/TARGET_NAME/target.h`).
 
 * The flight mode `MSP RC Override` is asserted
 * The override mask `msp_override_channels` is set for the channels to be overridden.
 
 ## Caveats
 
-* For firmware earlier than INAV 7.0 (from 25 May 2023 or later), it is necessary to remove the erroneous `_Static_asset` from `src/main/cms/cms_menu_osd.c` c. line 333. See [PR](https://github.com/iNavFlight/inav/pull/9077).
+* For firmware earlier than INAV 7.0 (prior to 25 May 2023), it is necessary to remove the erroneous `_Static_asset` from `src/main/cms/cms_menu_osd.c` c. line 333. See [PR](https://github.com/iNavFlight/inav/pull/9077) for details.
 * The bits in the bit mask count from zero, while (most) humans count channels from 1. Thus, (in the example that follows), if you wished to override channel 14, it is necessary to set bit 13 in the override mask `set msp_override_channels = 8192`.
 * If you stop overriding the channel, it will fall back to the TX RC value.
 
