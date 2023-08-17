@@ -147,7 +147,7 @@ func main() {
 	}
 
 	devdesc := check_device()
-	msp := MSPInit(devdesc)
+	msp := NewMSPChannel(devdesc)
 	msp.Init()
 	msp.SetOverride(omap)
 }

@@ -355,7 +355,7 @@ func (m *MSPSerial) Send_msp(cmd uint16, payload []byte) {
 	m.Write(buf)
 }
 
-func MSPInit(dd DevDescription) *MSPSerial {
+func NewMSPChannel(dd DevDescription) *MSPSerial {
 	m := NewMSPSerial(dd)
 	m.c0 = make(chan SChan)
 	go m.Read_msp(m.c0)

@@ -65,7 +65,7 @@ Zero or more channel:value pairs may be specified. If none are specified, the ch
 
 In this example, a emulated (SITL) IBUS receiver is configured as UART3. MSP is configured for UART 1 and 2. We use UART1 (`-d tcp://localhost:5760`). The SITL is armed (it is "flying" a blackbox log).
 
-Note that `msp_setoverride` sends channel value `1759` for all channels other than those overridden.
+Note that `msp_setoverride` sends channel value `1759` for all channels other than those overridden, just to make the data obvious.
 
 ```
 msp_setoverride -d tcp://localhost:5760 14=1234
@@ -96,9 +96,11 @@ Tx: 1759 1759 1759 1759 1759 1759 1759 1759 1759 1759 1759 1759 1759 1234 1759 1
 Rx: 1500 1500 1500 1371 1001 1001 1001 1001 1001 1800 1001 1001 1001 1234 1001 1001 1001 1001 armed (2c)
 ^C
 ```
-In the received data, we see that **all** channel values are those set by the SITL (`1500`, `1371`, `1001`), other than channel 14, which is set to the override value of `1234`. Note that this takes a number of cycles to be established, as a **continuous 5Hz rate is required**.
+In the received data, we see that **all** channel values are those set by the SITL (`1500`, `1371`, `1001`, `1800`), other than channel 14, which is set to the override value of `1234`. Note that this takes a number of cycles to be established, as a **continuous 5Hz rate is required**.
 
-If we stop sending the override data, channel 14 falls back to the RC value of `1001`. At no time, does the FC use the `1759` value.
+`MSP_RC` always returns the first four channels as `AERT`, so `AER` are centred at `1500` and the throttle is `1370`.
+
+If we stop sending the override data, channel 14 falls back to the RC value of `1001`. At no time, does the FC use the `1759` value, as this is outside the override mask.
 
 ```
 ### No channels, just report values and status ####
