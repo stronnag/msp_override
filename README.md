@@ -126,6 +126,10 @@ Rx: 1500 1500 1500 1371 1001 1001 1001 1001 1001 1800 1001 1001 1001 1001 1001 1
 
 Note that the `1800` received value is set by the SITL (for `RTH` in this BBL/FC configuration).
 
+## Other references
+
+* More comprehensive [MSP_SET_RAW_RC example](https://github.com/stronnag/msp_set_rx)
+
 ## Licence
 
 Whatever approximates to none / public domain in your locale. 0BSD (Zero clause BSD)  if an actual license is required by law.
