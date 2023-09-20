@@ -32,7 +32,7 @@ This should result in a `msp_setoverride` application.
 ## Usage
 
 ```
-Usage of msp_override [options] chan=value ...
+Usage of msp_setoverride [options] chan=value ...
   -b int
     	Baud rate (default 115200).gitignore
   -d string
