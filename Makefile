@@ -23,6 +23,7 @@ arm_status: arm_status.go
 
 clean:
 	go clean
+	rm -f arm_status msp_setoverride
 
 install: $(APP)
 	-install -d $(prefix)/bin
