@@ -34,7 +34,7 @@ This should result in a `msp_setoverride` application.
 ```
 Usage of msp_setoverride [options] chan=value ...
   -b int
-    	Baud rate (default 115200).gitignore
+    	Baud rate (default 115200)
   -d string
     	Serial Device
 ```
