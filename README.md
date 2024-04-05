@@ -98,7 +98,7 @@ Rx: 1500 1500 1500 1371 1001 1001 1001 1001 1001 1800 1001 1001 1001 1234 1001 1
 ```
 In the received data, we see that **all** channel values are those set by the SITL (`1500`, `1371`, `1001`, `1800`), other than channel 14, which is set to the override value of `1234`. Note that this takes a number of cycles to be established, as a **continuous 5Hz rate is required**.
 
-`MSP_RC` always returns the first four channels as `AERT`, so `AER` are centred at `1500` and the throttle is `1370`.
+`MSP_RC` always returns the first four channels as `AERT`, so `AER` are centred at `1500` and the throttle is `1371`.
 
 If we stop sending the override data, channel 14 falls back to the RC value of `1001`. At no time, does the FC use the `1759` value, as this is outside the override mask.
 
