@@ -437,69 +437,76 @@ func deserialise_rx(b []byte) []int16 {
 }
 
 func (m *MSPSerial) SetOverride(omap map[int]uint16) {
+	log.Printf("Start TX loop, every %dms", *every)
+	ticker := time.NewTicker(time.Duration(*every) * time.Millisecond)
+	var stscmd uint16
 	for {
-		if len(omap) > 0 {
-			tdata := m.serialise_rx(omap)
-			m.Send_msp(msp_SET_RAW_RC, tdata)
-			<-m.c0
-			txdata := deserialise_rx(tdata)
-			fmt.Printf("Tx:")
-			for _, r := range txdata {
-				fmt.Printf(" %4d", r)
-			}
-			fmt.Println()
-		}
-		m.Send_msp(msp_RC, nil)
-		v := <-m.c0
-		if v.cmd == msp_RC {
-			rxdata := deserialise_rx(v.data)
-			fmt.Printf("Rx:")
-			for _, r := range rxdata {
-				fmt.Printf(" %4d", r)
-			}
-		}
-		var stscmd uint16
-		if m.vcapi > 0x200 {
-			if m.fcvers >= 0x010801 {
-				stscmd = msp2_INAV_STATUS
-			} else {
-				stscmd = msp_STATUS_EX
-			}
-		} else {
-			stscmd = msp_STATUS
-		}
-		m.Send_msp(stscmd, nil)
-		v = <-m.c0
-		if v.ok {
-			var status uint64
-			if stscmd == msp2_INAV_STATUS {
-				status = binary.LittleEndian.Uint64(v.data[13:21])
-			} else {
-				status = uint64(binary.LittleEndian.Uint32(v.data[6:10]))
-			}
-
-			var armf uint32
-			armf = 0
-			if stscmd == msp_STATUS_EX {
-				armf = uint32(binary.LittleEndian.Uint16(v.data[13:15]))
-			} else {
-				armf = binary.LittleEndian.Uint32(v.data[9:13])
-			}
-
-			if status&1 == 1 {
-				fmt.Print(" armed")
-				if armf > 12 {
-					fmt.Printf(" (%x)", armf)
+		select {
+		case <-ticker.C:
+			if len(omap) > 0 {
+				tdata := m.serialise_rx(omap)
+				m.Send_msp(msp_SET_RAW_RC, tdata)
+				txdata := deserialise_rx(tdata)
+				fmt.Printf("Tx:")
+				for _, r := range txdata {
+					fmt.Printf(" %4d", r)
 				}
+				fmt.Println()
 			} else {
-				if stscmd == msp_STATUS {
-					fmt.Print(" unarmed")
+				m.Send_msp(msp_RC, nil)
+			}
+
+		case v := <-m.c0:
+			switch v.cmd {
+			case msp_SET_RAW_RC:
+				m.Send_msp(msp_RC, nil)
+			case msp_RC:
+				rxdata := deserialise_rx(v.data)
+				fmt.Printf("Rx:")
+				for _, r := range rxdata {
+					fmt.Printf(" %4d", r)
+				}
+				if m.vcapi > 0x200 {
+					if m.fcvers >= 0x010801 {
+						stscmd = msp2_INAV_STATUS
+					} else {
+						stscmd = msp_STATUS_EX
+					}
 				} else {
-					fmt.Printf(" unarmed (%x)", armf)
+					stscmd = msp_STATUS
+				}
+				m.Send_msp(stscmd, nil)
+			case msp2_INAV_STATUS, msp_STATUS_EX, msp_STATUS:
+				if v.ok {
+					var status uint64
+					if stscmd == msp2_INAV_STATUS {
+						status = binary.LittleEndian.Uint64(v.data[13:21])
+					} else {
+						status = uint64(binary.LittleEndian.Uint32(v.data[6:10]))
+					}
+					var armf uint32
+					armf = 0
+					if stscmd == msp_STATUS_EX {
+						armf = uint32(binary.LittleEndian.Uint16(v.data[13:15]))
+					} else {
+						armf = binary.LittleEndian.Uint32(v.data[9:13])
+					}
+
+					if status&1 == 1 {
+						fmt.Print(" armed")
+						if armf > 12 {
+							fmt.Printf(" (%x)", armf)
+						}
+					} else {
+						if stscmd == msp_STATUS {
+							fmt.Print(" unarmed")
+						} else {
+							fmt.Printf(" unarmed (%x)", armf)
+						}
+					}
+					fmt.Println()
 				}
 			}
-			fmt.Println()
-			time.Sleep(100 * time.Millisecond)
 		}
 	}
 }

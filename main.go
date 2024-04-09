@@ -29,6 +29,7 @@ type DevDescription struct {
 
 var (
 	baud   = flag.Int("b", 115200, "Baud rate")
+	every  = flag.Int("every", 100, "Refresh (ms)")
 	device = flag.String("d", "", "Serial Device")
 )
 

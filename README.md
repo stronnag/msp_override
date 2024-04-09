@@ -37,6 +37,8 @@ Usage of msp_setoverride [options] chan=value ...
     	Baud rate (default 115200)
   -d string
     	Serial Device
+  -every int
+    	Refresh (ms) (default 100)
 ```
 
 ### Channel and values
@@ -54,6 +56,14 @@ Zero or more channel:value pairs may be specified. If none are specified, the ch
 ```
     msp_setoverride -d tcp://localhost:5760 14=1234 15=1867
 ```
+
+### Refresh
+
+The `-every MS` option sets the rate at which the override is sent. The default is `100`ms (10hz). A minimum refresh of 5Hz is required:
+
+* `-every 200` : works, channel(s) are overridden
+* `-every 201` : fail(safe), channel(s) not are overridden
+
 ### Device name
 
 * On Linux, `/dev/ttyUSB0` and `/dev/ttyACM0` are automatically detected, on other platforms, the device node must be specified (e.g. `-d /dev/cuaU0`, `-d COM17`).
